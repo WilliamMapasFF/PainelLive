@@ -79,7 +79,6 @@ body.dark{ background:#121212; }
     height:180px;
     background:#333;
     border-radius:10px;
-    position:relative;
     overflow:hidden;
     margin-bottom:10px;
 }
@@ -89,11 +88,47 @@ body.dark{ background:#121212; }
     object-fit:cover;
 }
 
-/* VOTOS */
 .votos{
     font-size:30px;
     font-weight:bold;
     outline:none;
+}
+
+/* JANELAS EXTRAS */
+.window{
+    position:fixed;
+    width:180px;
+    height:180px;
+    background:#222;
+    border-radius:12px;
+    padding:6px;
+    cursor:move;
+    z-index:900;
+}
+.window .image-box{
+    width:100%;
+    height:100%;
+    margin:0;
+}
+
+/* BOTÃO FECHAR */
+.close-btn{
+    position:absolute;
+    top:4px;
+    right:6px;
+    width:20px;
+    height:20px;
+    background:#c0392b;
+    color:white;
+    font-weight:bold;
+    border-radius:50%;
+    text-align:center;
+    line-height:20px;
+    cursor:pointer;
+    z-index:10;
+}
+.close-btn:hover{
+    background:#e74c3c;
 }
 
 /* MENU CONTEXTO */
@@ -104,7 +139,7 @@ body.dark{ background:#121212; }
     border-radius:10px;
     padding:5px 0;
     display:none;
-    z-index:2000;
+    z-index:3000;
 }
 .context-menu div{
     padding:8px 16px;
@@ -112,19 +147,6 @@ body.dark{ background:#121212; }
 }
 .context-menu div:hover{
     background:#444;
-}
-
-/* JANELAS EXTRAS */
-.window{
-    position:fixed;
-    right:120px;
-    top:120px;
-    width:180px;
-    height:180px;
-    background:#222;
-    border-radius:12px;
-    padding:8px;
-    z-index:900;
 }
 </style>
 </head>
@@ -143,7 +165,6 @@ body.dark{ background:#121212; }
 </div>
 
 <div class="center">
-
     <div class="candidato">
         <h3>Candidato 1</h3>
         <div class="image-box" oncontextmenu="openMenu(event,this)"></div>
@@ -155,38 +176,33 @@ body.dark{ background:#121212; }
         <div class="image-box" oncontextmenu="openMenu(event,this)"></div>
         <div class="votos" contenteditable="true">Votos</div>
     </div>
-
 </div>
 
 <div class="context-menu" id="menu"></div>
 
-<input type="color" id="colorPicker" style="display:none">
-<input type="color" id="titleColorPicker" style="display:none">
+<input type="color" id="colorPicker" hidden>
+<input type="color" id="titleColorPicker" hidden>
 
 <script>
 let targetBox=null;
+let dragTarget=null;
+let offsetX=0, offsetY=0;
 
-/* FUNÇÕES GERAIS */
+/* FUNÇÕES VISUAIS */
 function toggleMode(){
     document.body.classList.toggle("dark");
 }
-
 function changeVoteColor(){
     const p=document.getElementById("colorPicker");
     p.click();
-    p.oninput=()=>{
-        document.querySelectorAll(".votos")
+    p.oninput=()=>document.querySelectorAll(".votos")
         .forEach(v=>v.style.color=p.value);
-    }
 }
-
 function changeTitleColor(){
     const p=document.getElementById("titleColorPicker");
     p.click();
-    p.oninput=()=>{
-        document.querySelector(".titulo-geral input")
+    p.oninput=()=>document.querySelector(".titulo-geral input")
         .style.color=p.value;
-    }
 }
 
 /* MENU BOTÃO DIREITO */
@@ -212,6 +228,7 @@ document.addEventListener("click",()=>{
     document.getElementById("menu").style.display="none";
 });
 
+/* IMAGEM */
 function addImage(){
     const input=document.createElement("input");
     input.type="file";
@@ -224,7 +241,6 @@ function addImage(){
     };
     input.click();
 }
-
 function removeImage(){
     targetBox.innerHTML="";
 }
@@ -233,11 +249,38 @@ function removeImage(){
 function novaJanela(){
     const w=document.createElement("div");
     w.className="window";
-    w.innerHTML=`
-        <div class="image-box" oncontextmenu="openMenu(event,this)"></div>
-    `;
+    w.style.left="120px";
+    w.style.top="220px";
+
+    const close=document.createElement("div");
+    close.className="close-btn";
+    close.innerHTML="×";
+    close.onclick=()=>w.remove();
+
+    const box=document.createElement("div");
+    box.className="image-box";
+    box.oncontextmenu=(e)=>openMenu(e,box);
+
+    w.appendChild(close);
+    w.appendChild(box);
+
+    w.onmousedown=e=>{
+        if(e.button!==0) return;
+        dragTarget=w;
+        offsetX=e.clientX-w.offsetLeft;
+        offsetY=e.clientY-w.offsetTop;
+    };
+
     document.body.appendChild(w);
 }
+
+document.addEventListener("mousemove",e=>{
+    if(dragTarget){
+        dragTarget.style.left=e.clientX-offsetX+"px";
+        dragTarget.style.top=e.clientY-offsetY+"px";
+    }
+});
+document.addEventListener("mouseup",()=>dragTarget=null);
 </script>
 
 </body>
