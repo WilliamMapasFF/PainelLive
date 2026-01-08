@@ -11,12 +11,9 @@ body{
     background:#eaeaea;
     transition:0.3s;
 }
+body.dark{ background:#121212; }
 
-body.dark{
-    background:#121212;
-}
-
-/* TÍTULO GERAL */
+/* TÍTULO */
 .titulo-geral{
     position:fixed;
     top:20px;
@@ -34,14 +31,18 @@ body.dark{
     color:white;
     text-align:center;
     outline:none;
+    width:600px;
+    max-width:90vw;
 }
 
-/* BOTÕES TOPO */
+/* BOTÕES */
 .top-buttons{
     position:fixed;
-    top:20px;
+    top:50%;
     right:20px;
+    transform:translateY(-50%);
     display:flex;
+    flex-direction:column;
     gap:10px;
     z-index:1000;
 }
@@ -53,44 +54,36 @@ body.dark{
     font-weight:bold;
 }
 
-/* ÁREA CENTRAL */
+/* ÁREA DOS CANDIDATOS */
 .center{
     position:absolute;
     top:50%;
     left:50%;
     transform:translate(-50%,-50%);
     display:flex;
-    gap:80px;
+    gap:120px;
 }
 
-/* JANELA */
-.window{
-    width:220px;
+/* CANDIDATO FIXO */
+.candidato{
+    width:240px;
     background:#1e1e1e;
-    border-radius:12px;
-    padding:10px;
+    border-radius:14px;
+    padding:12px;
     color:white;
-    position:absolute;
-    cursor:move;
+    text-align:center;
 }
 
-.window-header{
-    display:flex;
-    justify-content:space-between;
-    font-weight:bold;
-}
-
-.close{
-    cursor:pointer;
-    color:red;
+.candidato h3{
+    margin:0 0 8px 0;
 }
 
 .image-box{
     width:100%;
-    height:130px;
+    height:150px;
     background:#333;
     border-radius:10px;
-    margin:10px 0;
+    margin-bottom:8px;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -102,21 +95,37 @@ body.dark{
     object-fit:cover;
 }
 
-.window button{
+.candidato button{
     width:100%;
-    padding:6px;
+    padding:7px;
     border:none;
     border-radius:8px;
     cursor:pointer;
-    margin-bottom:5px;
+    margin-bottom:6px;
 }
 
 .votos{
-    font-size:28px;
-    text-align:center;
+    font-size:30px;
     font-weight:bold;
     outline:none;
 }
+
+/* JANELAS EXTRAS */
+.window{
+    width:220px;
+    background:#1e1e1e;
+    border-radius:12px;
+    padding:10px;
+    color:white;
+    position:absolute;
+    cursor:move;
+}
+.window-header{
+    display:flex;
+    justify-content:space-between;
+    font-weight:bold;
+}
+.close{ color:red; cursor:pointer; }
 </style>
 </head>
 
@@ -135,67 +144,55 @@ body.dark{
     <button onclick="novaJanela()">➕ Nova Janela</button>
 </div>
 
-<!-- CANDIDATOS -->
+<!-- CANDIDATOS FIXOS -->
 <div class="center">
-    <div class="window candidato" style="left:-300px; top:-100px">
-        <div class="window-header">
-            <span>Candidato 1</span>
-            <span class="close" onclick="this.parentElement.parentElement.remove()">✖</span>
-        </div>
+
+    <div class="candidato">
+        <h3>Candidato 1</h3>
         <div class="image-box"></div>
         <button onclick="addImage(this)">+ Imagem</button>
         <div class="votos" contenteditable="true">Votos</div>
     </div>
 
-    <div class="window candidato" style="left:300px; top:-100px">
-        <div class="window-header">
-            <span>Candidato 2</span>
-            <span class="close" onclick="this.parentElement.parentElement.remove()">✖</span>
-        </div>
+    <div class="candidato">
+        <h3>Candidato 2</h3>
         <div class="image-box"></div>
         <button onclick="addImage(this)">+ Imagem</button>
         <div class="votos" contenteditable="true">Votos</div>
     </div>
+
 </div>
 
 <input type="color" id="colorPicker" style="display:none">
 <input type="color" id="titleColorPicker" style="display:none">
 
 <script>
-/* MODO FUNDO */
 function toggleMode(){
     document.body.classList.toggle("dark");
 }
 
-/* COR DOS VOTOS */
 function changeVoteColor(){
-    const picker = document.getElementById("colorPicker");
-    picker.click();
-    picker.oninput = () => {
-        document.querySelectorAll(".votos").forEach(v=>{
-            v.style.color = picker.value;
-        });
-    }
+    const p=document.getElementById("colorPicker");
+    p.click();
+    p.oninput=()=>document.querySelectorAll(".votos")
+        .forEach(v=>v.style.color=p.value);
 }
 
-/* COR DO TÍTULO */
 function changeTitleColor(){
-    const picker = document.getElementById("titleColorPicker");
-    picker.click();
-    picker.oninput = () => {
-        document.querySelector(".titulo-geral input").style.color = picker.value;
-    }
+    const p=document.getElementById("titleColorPicker");
+    p.click();
+    p.oninput=()=>document.querySelector(".titulo-geral input")
+        .style.color=p.value;
 }
 
-/* ADICIONAR IMAGEM */
 function addImage(btn){
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.onchange = e=>{
-        const img = document.createElement("img");
-        img.src = URL.createObjectURL(e.target.files[0]);
-        const box = btn.previousElementSibling;
+    const input=document.createElement("input");
+    input.type="file";
+    input.accept="image/*";
+    input.onchange=e=>{
+        const img=document.createElement("img");
+        img.src=URL.createObjectURL(e.target.files[0]);
+        const box=btn.previousElementSibling;
         box.innerHTML="";
         box.appendChild(img);
     }
@@ -204,11 +201,11 @@ function addImage(btn){
 
 /* JANELAS EXTRAS */
 function novaJanela(){
-    const win = document.createElement("div");
-    win.className="window";
-    win.style.left="50px";
-    win.style.top="200px";
-    win.innerHTML=`
+    const w=document.createElement("div");
+    w.className="window";
+    w.style.left="50px";
+    w.style.top="200px";
+    w.innerHTML=`
         <div class="window-header">
             <span>Janela</span>
             <span class="close" onclick="this.parentElement.parentElement.remove()">✖</span>
@@ -216,27 +213,23 @@ function novaJanela(){
         <div class="image-box"></div>
         <button onclick="addImage(this)">+ Imagem</button>
     `;
-    document.body.appendChild(win);
-    drag(win);
+    document.body.appendChild(w);
+    drag(w);
 }
 
-/* ARRASTAR */
 function drag(el){
     let x=0,y=0;
-    el.onmousedown = e=>{
-        x=e.clientX;
-        y=e.clientY;
-        document.onmousemove = ev=>{
-            el.style.left = el.offsetLeft + (ev.clientX-x) + "px";
-            el.style.top = el.offsetTop + (ev.clientY-y) + "px";
-            x=ev.clientX;
-            y=ev.clientY;
+    el.onmousedown=e=>{
+        x=e.clientX; y=e.clientY;
+        document.onmousemove=ev=>{
+            el.style.left=el.offsetLeft+(ev.clientX-x)+"px";
+            el.style.top =el.offsetTop +(ev.clientY-y)+"px";
+            x=ev.clientX; y=ev.clientY;
         }
-        document.onmouseup = ()=>document.onmousemove=null;
+        document.onmouseup=()=>document.onmousemove=null;
     }
 }
-document.querySelectorAll(".window").forEach(drag);
 </script>
 
 </body>
-</html>
+    </html>
