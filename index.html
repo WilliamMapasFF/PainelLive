@@ -73,6 +73,7 @@ body.dark{ background:#121212; }
     padding:12px;
     color:white;
     text-align:center;
+    position: relative;
 }
 
 .image-box{
@@ -96,17 +97,20 @@ body.dark{ background:#121212; }
     outline:none;
 }
     
-.nome{
+.nome {
     font-weight: bold;
-    font-size: 40px;   /* opcional, pode aumentar/diminuir */
-    margin-bottom: 8px;
-    margin-top: -200; /*sobe o nome */
-    
-    background-color: #000; /* FUNDO PRETO */
-    color: #fff;            /* texto branco */
-    padding: 6px 10px;      /* cria o quadrado */
+    font-size: 40px;
+
+    background: #000;
+    color: #fff;
+    padding: 6px 10px;
     text-align: center;
-    }
+
+    position: absolute;   /* CHAVE DO PROBLEMA */
+    top: -50px;           /* SOBE pra cima */
+    left: 0;
+    width: 100%;
+}
     
 /* JANELAS */
 .window{
